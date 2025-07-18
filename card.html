@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Simple Gift</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            background: linear-gradient(180deg, #f8f6f0 0%, #ede8dd 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5a5a5a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 300;
+            margin-bottom: 3rem;
+            color: #3a3a3a;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .gift-card-container {
+            position: relative;
+            margin: 3rem auto;
+            width: 320px;
+            height: 200px;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.6s ease;
+            border: 1px solid #e8e5e0;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f3f0 100%);
+            z-index: 2;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #faf8f5 0%, #f0ede6 100%);
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .card-front.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: 1;
+        }
+
+        .card-back.revealed {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        .card-logo {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #8b7355;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #a39080;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .muji-logo {
+            font-size: 1.2rem;
+            color: #8b7355;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .gift-amount {
+            font-size: 2.5rem;
+            font-weight: 200;
+            color: #8b7355;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .gift-message {
+            font-size: 1rem;
+            color: #6b6250;
+            text-align: center;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: #a39080;
+            margin-top: 3rem;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .gift-card-container {
+                width: 280px;
+                height: 175px;
+            }
+            
+            .gift-amount {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="font-size: clamp(1.3rem, 3.5vw, 1.8rem); font-weight: 300; color: #8b7355; margin-bottom: 1rem; letter-spacing: 2px; opacity: 0; animation: fadeInUp 1s ease forwards;">Rachu</div>
+        <h1 class="header">A Simple Gift for Your 21st</h1>
+        
+        <div class="gift-card-container" id="cardContainer">
+            <div class="card-front" id="cardFront">
+                <div class="card-logo">SOMETHING</div>
+                <div class="card-subtitle">special</div>
+            </div>
+            <div class="card-back" id="cardBack">
+                <div class="muji-logo">MUJI</div>
+                <div class="gift-amount">$100</div>
+                <div class="gift-message">
+                    For all the simple, beautiful things<br>
+                    that bring joy to everyday life.<br><br>
+                    <em>Enjoy discovering what speaks to you.</em>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instruction" id="instruction">
+            Touch the card to reveal
+        </div>
+        
+        <div style="font-size: clamp(0.9rem, 2.5vw, 1.1rem); color: #a39080; margin-top: 2.5rem; font-weight: 300; letter-spacing: 0.5px; opacity: 0; animation: fadeInUp 1s ease forwards 1.2s;">
+            with love from Mom, Babu and Daddy
+        </div>
+    </div>
+
+    <script>
+        let isRevealed = false;
+        
+        document.getElementById('cardContainer').onclick = function() {
+            if (!isRevealed) {
+                document.getElementById('cardFront').className = 'card-front hidden';
+                document.getElementById('cardBack').className = 'card-back revealed';
+                document.getElementById('instruction').textContent = 'Simple pleasures await';
+                isRevealed = true;
+            }
+        };
+    </script>
+</body>
+</html>
