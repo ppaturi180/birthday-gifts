@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Journey Begins...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f3ff 0%, #e8f4fd 50%, #fff0f8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .journey-step {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            margin-bottom: 2rem;
+        }
+
+        .journey-step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .name-header {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+
+        .personal-message {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .puzzle-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem 0;
+        }
+
+        .puzzle-title {
+            font-size: 1.4rem;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .riddle-text {
+            font-size: 1.1rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .word-puzzle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #c8a8e9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6b46c1;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .letter-box:hover {
+            background: #f3e8ff;
+            transform: scale(1.05);
+        }
+
+        .letter-box.filled {
+            background: #c8a8e9;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        .letter-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .letter-option {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #a7c7e7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2563eb;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .letter-option:hover {
+            background: #dbeafe;
+            transform: scale(1.1);
+        }
+
+        .letter-option.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: scale(0.9);
+        }
+
+        .hint-button {
+            background: linear-gradient(135deg, #fbb6ce, #c8a8e9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .hint-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(251, 182, 206, 0.4);
+        }
+
+        .hint-text {
+            color: #8b5cf6;
+            font-style: italic;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .hint-text.visible {
+            opacity: 1;
+        }
+
+        .success-message {
+            color: #059669;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .success-message.visible {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .continue-button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            opacity: 0;
+            transition: all 0.5s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .continue-button.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .continue-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @media (max-width: 768px) {
+            .letter-box {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .letter-option {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="journey-step visible">
+            <div class="name-header">Rachu</div>
+            <div class="personal-message">
+                Today marks a special milestone in your journey...<br>
+                21 years of bringing joy, laughter, and love to our lives.
+            </div>
+        </div>
+
+        <div class="journey-step" id="step2">
+            <div class="personal-message">
+                As you step into this new chapter,<br>
+                we have something special waiting for you.<br><br>
+                But first, a little puzzle to unlock your first gift! 🎁
+            </div>
+        </div>
+
+        <div class="journey-step" id="step3">
+            <div class="puzzle-container">
+                <div class="puzzle-title">Solve the Riddle to Continue</div>
+                <div class="riddle-text">
+                    "I keep you connected to those you love,<br>
+                    I capture memories from above,<br>
+                    I fit right in your pocket small,<br>
+                    Yet connect you to the world and all.<br><br>
+                    What am I?"
+                </div>
+                
+                <div class="word-puzzle" id="wordPuzzle">
+                    <div class="letter-box" data-index="0"></div>
+                    <div class="letter-box" data-index="1"></div>
+                    <div class="letter-box" data-index="2"></div>
+                    <div class="letter-box" data-index="3"></div>
+                    <div class="letter-box" data-index="4"></div>
+                </div>
+
+                <div class="letter-options" id="letterOptions">
+                    <div class="letter-option" data-letter="P">P</div>
+                    <div class="letter-option" data-letter="H">H</div>
+                    <div class="letter-option" data-letter="O">O</div>
+                    <div class="letter-option" data-letter="N">N</div>
+                    <div class="letter-option" data-letter="E">E</div>
+                    <div class="letter-option" data-letter="X">X</div>
+                    <div class="letter-option" data-letter="M">M</div>
+                    <div class="letter-option" data-letter="T">T</div>
+                </div>
+
+                <button class="hint-button" onclick="showHint()">Need a Hint?</button>
+                <div class="hint-text" id="hintText">
+                    Think about what you use every day to text, call, and take photos! 📱
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    🎉 Brilliant! You've unlocked your first gift!
+                </div>
+
+                <a href="phone.html" class="continue-button" id="continueButton">
+                    Discover Your Gift! ✨
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswer = "PHONE";
+        let currentAnswer = ["", "", "", "", ""];
+        let currentPosition = 0;
+        let puzzleSolved = false;
+
+        // Progressive reveal of steps
+        setTimeout(() => {
+            document.getElementById('step2').classList.add('visible');
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById('step3').classList.add('visible');
+        }, 4000);
+
+        // Letter selection logic
+        document.querySelectorAll('.letter-option').forEach(option => {
+            option.addEventListener('click', function() {
+                if (puzzleSolved || this.classList.contains('used')) return;
+
+                const letter = this.dataset.letter;
+                
+                if (currentPosition < 5) {
+                    // Fill the current position
+                    const letterBox = document.querySelector(`[data-index="${currentPosition}"]`);
+                    letterBox.textContent = letter;
+                    letterBox.classList.add('filled');
+                    
+                    currentAnswer[currentPosition] = letter;
+                    this.classList.add('used');
+                    currentPosition++;
+                    
+                    // Check if puzzle is complete
+                    if (currentPosition === 5) {
+                        checkAnswer();
+                    }
+                }
+            });
+        });
+
+        // Allow clicking on letter boxes to remove letters
+        document.querySelectorAll('.letter-box').forEach(box => {
+            box.addEventListener('click', function() {
+                if (puzzleSolved) return;
+                
+                const index = parseInt(this.dataset.index);
+                if (currentAnswer[index] !== "") {
+                    const letter = currentAnswer[index];
+                    
+                    // Clear the box
+                    this.textContent = "";
+                    this.classList.remove('filled');
+                    currentAnswer[index] = "";
+                    
+                    // Re-enable the letter option
+                    document.querySelector(`[data-letter="${letter}"]`).classList.remove('used');
+                    
+                    // Shift everything left
+                    for (let i = index; i < 4; i++) {
+                        if (currentAnswer[i + 1] !== "") {
+                            currentAnswer[i] = currentAnswer[i + 1];
+                            currentAnswer[i + 1] = "";
+                            
+                            const currentBox = document.querySelector(`[data-index="${i}"]`);
+                            const nextBox = document.querySelector(`[data-index="${i + 1}"]`);
+                            
+                            currentBox.textContent = nextBox.textContent;
+                            currentBox.classList.add('filled');
+                            nextBox.textContent = "";
+                            nextBox.classList.remove('filled');
+                        }
+                    }
+                    
+                    // Update current position
+                    currentPosition = currentAnswer.findIndex(letter => letter === "");
+                    if (currentPosition === -1) currentPosition = 5;
+                }
+            });
+        });
+
+        function checkAnswer() {
+            const userAnswer = currentAnswer.join("");
+            if (userAnswer === correctAnswer) {
+                puzzleSolved = true;
+                
+                // Show success message
+                document.getElementById('successMessage').classList.add('visible');
+                
+                // Show continue button
+                setTimeout(() => {
+                    document.getElementById('continueButton').classList.add('visible');
+                }, 500);
+                
+                // Add celebration effect
+                createCelebration();
+            }
+        }
+
+        function showHint() {
+            document.getElementById('hintText').classList.add('visible');
+        }
+
+        function createCelebration() {
+            const colors = ['#fbb6ce', '#a7c7e7', '#c8a8e9', '#b5e7a0'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: fixed;
+                        width: 8px;
+                        height: 8px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        border-radius: 50%;
+                        pointer-events: none;
+                        left: ${Math.random() * 100}vw;
+                        top: -10px;
+                        z-index: 1000;
+                        animation: fall ${2 + Math.random() * 3}s linear forwards;
+                    `;
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        // Add CSS for falling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(110vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
