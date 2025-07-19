@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Message Awaits</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .print-container {
+            width: 8.5in;
+            height: 11in;
+            margin: 0 auto;
+            padding: 1in;
+            background: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-area {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1in 0.75in 0.75in 0.75in;
+            z-index: 2;
+        }
+
+        .mystery-border {
+            position: absolute;
+            top: 1.25in;
+            left: 1.25in;
+            right: 1.25in;
+            bottom: 1.25in;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .inner-border {
+            position: absolute;
+            top: 1.5in;
+            left: 1.5in;
+            right: 1.5in;
+            bottom: 1.5in;
+            border: 1px solid #f1f5f9;
+            border-radius: 15px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cryptic-message {
+            font-size: 1rem;
+            color: #718096;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .mystery-quote {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            font-style: italic;
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+
+        .main-content {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .qr-container {
+            margin: 0 auto 1rem auto;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+            animation: greetingPulse 2s ease-in-out infinite;
+        }
+
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            border: 3px dashed #cbd5e0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.3;
+            background: #fafafa;
+            animation: qrGlow 3s ease-in-out infinite;
+        }
+
+        .scan-instruction {
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .scan-hint {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .cryptic-signature {
+            font-size: 0.8rem;
+            color: #718096;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 1.7in;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #e2e8f0;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            animation: decorativeFloat 4s ease-in-out infinite;
+        }
+
+        .corner-dots {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 50%;
+        }
+
+        .corner-dots.top-left {
+            top: 1.6in;
+            left: 1.6in;
+        }
+
+        .corner-dots.top-right {
+            top: 1.6in;
+            right: 1.6in;
+        }
+
+        .corner-dots.bottom-left {
+            bottom: 1.6in;
+            left: 1.6in;
+        }
+
+        .corner-dots.bottom-right {
+            bottom: 1.6in;
+            right: 1.6in;
+        }
+
+        .timestamp {
+            position: absolute;
+            bottom: 1.35in;
+            right: 1.6in;
+            font-size: 0.65rem;
+            color: #cbd5e0;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes greetingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                color: #4a5568; 
+            }
+            50% { 
+                transform: scale(1.05); 
+                color: #6b46c1; 
+            }
+        }
+
+        @keyframes qrGlow {
+            0%, 100% { 
+                box-shadow: 0 0 5px rgba(203, 213, 224, 0.3);
+                border-color: #cbd5e0;
+            }
+            50% { 
+                box-shadow: 0 0 15px rgba(107, 70, 193, 0.2);
+                border-color: #a78bfa;
+            }
+        }
+
+        .decorative-elements {
+            animation: decorativeFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes decorativeFloat {
+            0%, 100% { 
+                transform: translateX(-50%) translateY(0px); 
+                opacity: 0.6; 
+            }
+            50% { 
+                transform: translateX(-50%) translateY(-5px); 
+                opacity: 0.8; 
+            }
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .print-container {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        @media screen {
+            body {
+                background: #f7fafc;
+                padding: 1rem;
+            }
+            
+            .print-container {
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                margin: 2rem auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-container">
+        <div class="mystery-border"></div>
+        <div class="inner-border"></div>
+        <div class="corner-dots top-left"></div>
+        <div class="corner-dots top-right"></div>
+        <div class="corner-dots bottom-left"></div>
+        <div class="corner-dots bottom-right"></div>
+        <div class="decorative-elements">• • • • • • •</div>
+        <div class="timestamp">07.18.2025</div>
+
+        <div class="content-area">
+            <div class="header">
+                <div class="cryptic-message">
+                    When the moment arrives,<br>
+                    when curiosity calls,<br>
+                    when the ordinary becomes extraordinary...<br><br>
+                    The path will reveal itself.
+                </div>
+                <div class="mystery-quote">
+                    "Every journey begins with a single step into the unknown"
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="qr-section">
+                    <div class="qr-container">
+                        <div class="greeting">Hi Rachu!</div>
+                        <div class="qr-placeholder">
+                            Portal to<br>
+                            Discovery<br><br>
+                            <small>Replace with QR code for:<br>
+                            ppaturi180.github.io/birthday-gifts/birthday-qr-codes.html</small>
+                        </div>
+                    </div>
+                    <div class="scan-instruction">When ready, scan to begin</div>
+                    <div class="scan-hint">The threshold awaits your choice</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="cryptic-signature">
+                    Those who believe in magic are the ones who find it
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR code for the birthday QR codes page
+        function generateQRCode(text) {
+            const qrSize = 180;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(text)}&margin=15&color=4a5568&bgcolor=ffffff`;
+            
+            const container = document.querySelector('.qr-placeholder');
+            if (container) {
+                container.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">`;
+            }
+        }
+
+        // Generate QR code when page loads
+        window.addEventListener('load', function() {
+            const birthdayQRPageUrl = 'https://ppaturi180.github.io/birthday-gifts/birthday-qr-codes.html';
+            generateQRCode(birthdayQRPageUrl);
+        });
+
+        // Add print button for easy printing
+        document.addEventListener('DOMContentLoaded', function() {
+            const printButton = document.createElement('button');
+            printButton.textContent = '🖨️ Print Mystery';
+            printButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background: #4a5568;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 500;
+                z-index: 1000;
+                display: none;
+            `;
+            
+            // Only show print button on screen
+            if (window.matchMedia) {
+                const mediaQuery = window.matchMedia('print');
+                if (!mediaQuery.matches) {
+                    printButton.style.display = 'block';
+                }
+            }
+            
+            printButton.onclick = () => window.print();
+            document.body.appendChild(printButton);
+        });
+    </script>
+</body>
+</html>
