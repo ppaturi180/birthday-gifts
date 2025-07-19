@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Gift QR Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+        }
+
+        .print-page {
+            width: 8.5in;
+            height: 11in;
+            margin: 0 auto;
+            padding: 1in;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5in;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9, #b5e7a0);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .qr-container {
+            background: linear-gradient(135deg, #f8f3ff 0%, #e8f4fd 50%, #fff0f8 100%);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border: 3px solid #e2e8f0;
+            margin-bottom: 1in;
+            position: relative;
+            overflow: visible;
+        }
+
+        .name-decoration {
+            position: absolute;
+            font-size: 2.5rem;
+            font-weight: 700;
+            opacity: 0.15;
+            pointer-events: none;
+            color: #c8a8e9;
+        }
+
+        .name-rachu {
+            top: -15px;
+            left: -20px;
+            transform: rotate(-15deg);
+        }
+
+        .number-21 {
+            bottom: -20px;
+            right: -25px;
+            font-size: 4rem;
+            transform: rotate(15deg);
+        }
+
+        .birthday-elements {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .element-1 {
+            top: 20px;
+            right: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .element-2 {
+            bottom: 30px;
+            left: 25px;
+            animation: float 3s ease-in-out infinite 1s;
+        }
+
+        .element-3 {
+            top: 50%;
+            left: -30px;
+            animation: float 3s ease-in-out infinite 2s;
+        }
+
+        .element-4 {
+            top: 50%;
+            right: -30px;
+            animation: float 3s ease-in-out infinite 0.5s;
+        }
+
+        .qr-code {
+            width: 400px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            font-size: 1rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-code::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9, #b5e7a0);
+            background-size: 400% 400%;
+            border-radius: 25px;
+            z-index: -1;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .qr-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #4a5568;
+        }
+
+        .instruction-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .instruction-text {
+            font-size: 1rem;
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0.75in;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Print optimizations */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .print-page {
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+                height: 100vh;
+            }
+
+            .qr-container {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+                background: linear-gradient(135deg, #f8f3ff 0%, #e8f4fd 50%, #fff0f8 100%) !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .qr-code::before {
+                background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9, #b5e7a0) !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .subtitle {
+                background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9, #b5e7a0) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+                background-clip: text !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+
+        @media screen {
+            body {
+                background: #f7fafc;
+                padding: 1rem;
+            }
+            
+            .print-page {
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                margin: 2rem auto;
+            }
+        }
+
+        @page {
+            margin: 0.5in;
+            size: letter;
+        }
+    </style>
+</head>
+<body>
+    <div class="print-page">
+        <div class="header">
+            <div class="subtitle">SCAN TO BEGIN YOUR JOURNEY</div>
+        </div>
+
+        <div class="qr-container">
+            <!-- Name and number decorations -->
+            <div class="name-decoration name-rachu">Rachu</div>
+            <div class="name-decoration number-21">21</div>
+            
+            <!-- Birthday elements -->
+            <div class="birthday-elements element-1">🎈</div>
+            <div class="birthday-elements element-2">✨</div>
+            <div class="birthday-elements element-3">🎉</div>
+            <div class="birthday-elements element-4">🎁</div>
+            
+            <div class="qr-code" id="qrCode">
+                <div class="qr-inner" id="qrInner">
+                    Loading QR Code...<br><br>
+                    <small>QR Code for:<br>
+                    ppaturi180.github.io/birthday-gifts/mystery_entry_page.html</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <div class="instruction-title">How to Scan:</div>
+            <div class="instruction-text">
+                Open your phone's camera app<br>
+                Point it at the QR code
+            </div>
+        </div>
+
+        <div class="footer">
+        </div>
+    </div>
+
+    <script>
+        // Generate large QR code with creative styling
+        function generateQRCode() {
+            const url = 'https://ppaturi180.github.io/birthday-gifts/mystery_entry_page.html';
+            const qrSize = 380;
+            // Using purple/pink color scheme to match our theme
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(url)}&margin=25&color=6b46c1&bgcolor=ffffff&format=png`;
+            
+            const qrContainer = document.getElementById('qrInner');
+            qrContainer.innerHTML = `<img src="${qrUrl}" alt="Creative QR Code" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">`;
+        }
+
+        // Generate QR code when page loads
+        window.addEventListener('load', generateQRCode);
+
+        // Add print button for easy printing
+        document.addEventListener('DOMContentLoaded', function() {
+            const printButton = document.createElement('button');
+            printButton.textContent = '🖨️ Print as PDF';
+            printButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 24px;
+                background: #4a5568;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                font-size: 14px;
+            `;
+            
+            printButton.onclick = function() {
+                window.print();
+            };
+            
+            // Only show on screen, not when printing
+            if (window.matchMedia && !window.matchMedia('print').matches) {
+                document.body.appendChild(printButton);
+            }
+        });
+    </script>
+</body>
+</html>
