@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Message Awaits</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: celebratoryGradient 8s ease infinite;
+            min-height: 100vh;
+            color: #2d3748;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .mystery-border {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mystery-border::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+            animation: mysterySpin 20s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Confetti and celebration elements */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            animation: confetti-fall linear infinite;
+        }
+
+        .confetti:nth-child(1) { background: #ff6b6b; left: 10%; animation-duration: 3s; animation-delay: 0s; }
+        .confetti:nth-child(2) { background: #4ecdc4; left: 20%; animation-duration: 3.5s; animation-delay: 0.5s; }
+        .confetti:nth-child(3) { background: #45b7d1; left: 30%; animation-duration: 2.8s; animation-delay: 1s; }
+        .confetti:nth-child(4) { background: #96ceb4; left: 40%; animation-duration: 3.2s; animation-delay: 1.5s; }
+        .confetti:nth-child(5) { background: #ffeaa7; left: 50%; animation-duration: 2.9s; animation-delay: 2s; }
+        .confetti:nth-child(6) { background: #dda0dd; left: 60%; animation-duration: 3.4s; animation-delay: 2.5s; }
+        .confetti:nth-child(7) { background: #98d8c8; left: 70%; animation-duration: 3.1s; animation-delay: 3s; }
+        .confetti:nth-child(8) { background: #f7dc6f; left: 80%; animation-duration: 2.7s; animation-delay: 3.5s; }
+        .confetti:nth-child(9) { background: #bb8fce; left: 90%; animation-duration: 3.3s; animation-delay: 4s; }
+
+        .balloon {
+            position: fixed;
+            font-size: 2rem;
+            animation: balloon-float 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .balloon:nth-child(1) { left: 5%; animation-delay: 0s; }
+        .balloon:nth-child(2) { right: 5%; animation-delay: 2s; }
+        .balloon:nth-child(3) { left: 15%; animation-delay: 4s; }
+
+        .sparkle {
+            position: fixed;
+            color: #ffd700;
+            font-size: 1rem;
+            animation: sparkle-twinkle 2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .sparkle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 30%; right: 15%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { bottom: 40%; left: 20%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 1.5s; }
+        .sparkle:nth-child(5) { top: 50%; left: 50%; animation-delay: 2s; }
+
+        .floating-emoji {
+            position: fixed;
+            font-size: 1.5rem;
+            animation: emoji-float 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-emoji:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; }
+        .floating-emoji:nth-child(2) { top: 25%; right: 12%; animation-delay: 2s; }
+        .floating-emoji:nth-child(3) { bottom: 30%; left: 5%; animation-delay: 4s; }
+        .floating-emoji:nth-child(4) { bottom: 15%; right: 8%; animation-delay: 6s; }
+
+        .content-area {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .cryptic-message {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: #4a5568;
+            font-weight: 400;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .mystery-quote {
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            color: #718096;
+            font-style: italic;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease forwards 0.5s;
+            opacity: 0;
+        }
+
+        .main-content {
+            margin: 2rem 0;
+        }
+
+        .greeting {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: greetingPulse 3s ease-in-out infinite, celebratoryGradient 4s ease infinite;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+
+        .qr-section {
+            margin: 1.5rem 0;
+        }
+
+        .qr-container {
+            margin: 0 auto 1.5rem auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1);
+            display: inline-block;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-container:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(107, 70, 193, 0.3), 0 0 20px rgba(255,255,255,0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .qr-container:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .qr-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .qr-container:hover::after {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-code {
+            width: min(250px, 70vw);
+            height: min(250px, 70vw);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .qr-placeholder {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.4;
+            padding: 1rem;
+        }
+
+        .scan-instruction {
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            animation: instructionPulse 2s ease-in-out infinite;
+        }
+
+        .scan-hint {
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            color: #8b7280;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: 2rem;
+        }
+
+        .cryptic-signature {
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
+            color: #6b7280;
+            font-style: italic;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease forwards 1s;
+            opacity: 0;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #e2e8f0;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            animation: decorativeFloat 4s ease-in-out infinite;
+        }
+
+        .corner-dots {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            animation: dotPulse 3s ease-in-out infinite;
+        }
+
+        .corner-dots.top-left { top: 1rem; left: 1rem; }
+        .corner-dots.top-right { top: 1rem; right: 1rem; animation-delay: 0.5s; }
+        .corner-dots.bottom-left { bottom: 1rem; left: 1rem; animation-delay: 1s; }
+        .corner-dots.bottom-right { bottom: 1rem; right: 1rem; animation-delay: 1.5s; }
+
+        .tap-indicator {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #8b5cf6;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: tapPulse 2s ease-in-out infinite;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            font-weight: 600;
+            display: block;
+        }
+
+        @media (min-width: 768px) and (hover: hover) {
+            .tap-indicator {
+                display: none;
+            }
+        }
+
+        @keyframes tapPulse {
+            0%, 100% { 
+                opacity: 0.8; 
+                transform: translateX(-50%) scale(1); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateX(-50%) scale(1.05); 
+            }
+        }
+
+        @keyframes celebratoryGradient {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes balloon-float {
+            0%, 100% { 
+                transform: translateY(100vh) rotate(-5deg); 
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateY(-10vh) rotate(5deg); 
+                opacity: 1;
+            }
+        }
+
+        @keyframes sparkle-twinkle {
+            0%, 100% { 
+                opacity: 0.3; 
+                transform: scale(0.8) rotate(0deg); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2) rotate(180deg); 
+            }
+        }
+
+        @keyframes emoji-float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(-2deg); 
+                opacity: 0.7;
+            }
+            33% { 
+                transform: translateY(-15px) rotate(2deg); 
+                opacity: 1;
+            }
+            66% { 
+                transform: translateY(-8px) rotate(-1deg); 
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes greetingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.05); 
+                filter: brightness(1.2);
+            }
+        }
+
+        @keyframes instructionPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes decorativeFloat {
+            0%, 100% { 
+                transform: translateX(-50%) translateY(0px); 
+                opacity: 0.6; 
+            }
+            50% { 
+                transform: translateX(-50%) translateY(-3px); 
+                opacity: 0.8; 
+            }
+        }
+
+        @keyframes mysterySpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { 
+                opacity: 0.3; 
+                transform: scale(1); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.2); 
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        /* Loading animation for QR code */
+        .qr-loading {
+            animation: qrPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes qrPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Success feedback */
+        .qr-clicked {
+            animation: qrSuccess 0.6s ease;
+        }
+
+        @keyframes qrSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .qr-container {
+                box-shadow: 0 8px 25px rgba(107, 70, 193, 0.2), 0 0 0 3px rgba(139, 92, 246, 0.1);
+                border-color: rgba(139, 92, 246, 0.4);
+                animation: mobileGlow 3s ease-in-out infinite;
+            }
+        }
+
+        @keyframes mobileGlow {
+            0%, 100% { 
+                box-shadow: 0 8px 25px rgba(107, 70, 193, 0.2), 0 0 0 3px rgba(139, 92, 246, 0.1);
+            }
+            50% { 
+                box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3), 0 0 0 3px rgba(139, 92, 246, 0.2);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .mystery-border {
+                padding: 1.5rem;
+                border-radius: 15px;
+            }
+            
+            .qr-container {
+                padding: 15px;
+            }
+            
+            .corner-dots {
+                width: 4px;
+                height: 4px;
+            }
+        }
+            body {
+                padding: 0.5rem;
+            }
+            
+            .mystery-border {
+                padding: 1.5rem;
+                border-radius: 15px;
+            }
+            
+            .qr-container {
+                padding: 15px;
+            }
+            
+            .corner-dots {
+                width: 4px;
+                height: 4px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .mystery-border {
+                padding: 1rem;
+            }
+            
+            .qr-code {
+                width: min(200px, 80vw);
+                height: min(200px, 80vw);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Celebratory Elements -->
+    <div class="confetti-container">
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+    </div>
+    
+    <div class="balloon">🎈</div>
+    <div class="balloon">🎉</div>
+    <div class="balloon">🎂</div>
+    
+    <div class="sparkle">✨</div>
+    <div class="sparkle">⭐</div>
+    <div class="sparkle">✨</div>
+    <div class="sparkle">⭐</div>
+    <div class="sparkle">✨</div>
+    
+    <div class="floating-emoji">🎁</div>
+    <div class="floating-emoji">🎊</div>
+    <div class="floating-emoji">🥳</div>
+    <div class="floating-emoji">🌟</div>
+
+    <div class="container">
+        <div class="mystery-border">
+            <div class="corner-dots top-left"></div>
+            <div class="corner-dots top-right"></div>
+            <div class="corner-dots bottom-left"></div>
+            <div class="corner-dots bottom-right"></div>
+            <div class="decorative-elements">• • • • • • •</div>
+
+            <div class="content-area">
+                <div class="header">
+                    <div class="cryptic-message">
+                        When the moment arrives,<br>
+                        when curiosity calls,<br>
+                        when the ordinary becomes extraordinary...<br><br>
+                        The path will reveal itself.
+                    </div>
+                    <div class="mystery-quote">
+                        "Every journey begins with a single step into the unknown"
+                    </div>
+                </div>
+
+                <div class="main-content">
+                    <div class="greeting">Hi Rachu!</div>
+                    
+                    <div class="qr-section">
+                        <div class="qr-container" id="qrContainer">
+                            <div class="qr-code" id="qrCode">
+                                <div class="qr-placeholder qr-loading">
+                                    Portal to<br>
+                                    Discovery<br><br>
+                                    <small>Loading magical gateway...</small>
+                                </div>
+                            </div>
+                            <div class="tap-indicator">👆 Tap to Continue</div>
+                        </div>
+                        
+                        <div class="scan-instruction">When ready, scan or tap to begin</div>
+                        <div class="scan-hint">The threshold awaits your choice</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div class="cryptic-signature">
+                        Those who believe in magic are the ones who find it
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR code and make it clickable
+        function generateClickableQR() {
+            const targetUrl = 'https://ppaturi180.github.io/birthday-gifts/qr_printable_page.html';
+            const qrSize = 250;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(targetUrl)}&margin=15&color=4a5568&bgcolor=ffffff&format=png`;
+            
+            const qrContainer = document.getElementById('qrCode');
+            if (qrContainer) {
+                // Create clickable QR code - but don't make it a link since we're handling clicks on the container
+                qrContainer.innerHTML = `
+                    <img src="${qrImageUrl}" alt="Scan to continue your journey" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; pointer-events: none;" loading="lazy">
+                `;
+                
+                // Remove loading animation
+                qrContainer.classList.remove('qr-loading');
+            }
+        }
+
+        // Make the entire container clickable as backup
+        function makeContainerClickable() {
+            const container = document.getElementById('qrContainer');
+            const targetUrl = 'https://ppaturi180.github.io/birthday-gifts/qr_printable_page.html';
+            
+            // Remove any existing event listeners
+            container.replaceWith(container.cloneNode(true));
+            const newContainer = document.getElementById('qrContainer');
+            
+            newContainer.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('QR Container clicked!'); // Debug log
+                
+                // Add click feedback
+                newContainer.classList.add('qr-clicked');
+                
+                // Create mini celebration on click
+                createMiniCelebration();
+                
+                // Update tap indicator
+                const tapIndicator = newContainer.querySelector('.tap-indicator');
+                if (tapIndicator) {
+                    tapIndicator.textContent = 'Opening...';
+                    tapIndicator.style.background = 'rgba(34, 197, 94, 0.95)';
+                    tapIndicator.style.color = 'white';
+                }
+                
+                setTimeout(() => newContainer.classList.remove('qr-clicked'), 600);
+                
+                // Navigate to the page
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 800);
+            });
+            
+            // Add touch events for better mobile experience
+            newContainer.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                newContainer.style.transform = 'translateY(-2px) scale(0.98)';
+                newContainer.style.filter = 'brightness(1.1)';
+            });
+            
+            newContainer.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                newContainer.style.transform = '';
+                newContainer.style.filter = '';
+                // Trigger click after touch
+                newContainer.click();
+            });
+            
+            newContainer.addEventListener('touchcancel', function() {
+                newContainer.style.transform = '';
+                newContainer.style.filter = '';
+            });
+            
+            // Add keyboard accessibility
+            newContainer.setAttribute('tabindex', '0');
+            newContainer.setAttribute('role', 'button');
+            newContainer.setAttribute('aria-label', 'Navigate to birthday gifts page');
+            
+            newContainer.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    newContainer.click();
+                }
+            });
+        }
+
+        // Mini celebration when QR is clicked
+        function createMiniCelebration() {
+            const container = document.getElementById('qrContainer');
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const emojis = ['🎉', '✨', '🎊', '⭐', '🎈'];
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.cssText = `
+                        position: fixed;
+                        font-size: 1.5rem;
+                        pointer-events: none;
+                        z-index: 1000;
+                        left: ${centerX}px;
+                        top: ${centerY}px;
+                        animation: miniCelebration 1s ease-out forwards;
+                    `;
+                    
+                    const angle = (i * 72) + Math.random() * 30;
+                    emoji.style.setProperty('--mini-angle', angle + 'deg');
+                    
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 1000);
+                }, i * 50);
+            }
+        }
+
+
+
+
+
+        // Create celebratory burst on page load
+        function createCelebratoryBurst() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const burst = document.createElement('div');
+                    burst.style.cssText = `
+                        position: fixed;
+                        width: 12px;
+                        height: 12px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 1000;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        animation: burstOut 1.5s ease-out forwards;
+                    `;
+                    
+                    // Random direction
+                    const angle = (i * 24) + Math.random() * 20;
+                    burst.style.setProperty('--angle', angle + 'deg');
+                    
+                    document.body.appendChild(burst);
+                    setTimeout(() => burst.remove(), 1500);
+                }, i * 50);
+            }
+        }
+
+        // Add burst animation
+        const burstStyle = document.createElement('style');
+        burstStyle.textContent = `
+            @keyframes burstOut {
+                0% {
+                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 1;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1) translate(calc(cos(var(--angle)) * 150px), calc(sin(var(--angle)) * 150px));
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(0.5) translate(calc(cos(var(--angle)) * 200px), calc(sin(var(--angle)) * 200px));
+                    opacity: 0;
+                }
+            }
+        `;
+
+        // Add mini celebration animation
+        const miniCelebrationStyle = document.createElement('style');
+        miniCelebrationStyle.textContent = `
+            @keyframes miniCelebration {
+                0% {
+                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 1;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.2) translate(calc(cos(var(--mini-angle)) * 60px), calc(sin(var(--mini-angle)) * 60px));
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(0.8) translate(calc(cos(var(--mini-angle)) * 80px), calc(sin(var(--mini-angle)) * 80px));
+                    opacity: 0;
+                }
+            }
+        `;
+
+        // Add styles to document
+        document.head.appendChild(burstStyle);
+        document.head.appendChild(miniCelebrationStyle);
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            console.log('Page loaded, initializing...'); // Debug log
+            generateClickableQR();
+            makeContainerClickable();
+            
+            // Create celebratory burst after a short delay
+            setTimeout(createCelebratoryBurst, 500);
+            
+            console.log('Initialization complete!'); // Debug log
+        });
+
+        // Fallback if QR service fails
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG') {
+                const qrContainer = document.getElementById('qrCode');
+                const targetUrl = 'https://ppaturi180.github.io/birthday-gifts/qr_printable_page.html';
+                qrContainer.innerHTML = `
+                    <div style="padding: 20px; text-align: center; line-height: 1.5;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🎁</div>
+                        <div style="font-weight: 600; color: #6b46c1; margin-bottom: 10px;">Tap to Continue</div>
+                        <div style="font-size: 0.9rem; color: #6b7280;">Begin your birthday journey</div>
+                    </div>
+                `;
+            }
+        }, true);
+
+        // Preload the next page for faster navigation
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'https://ppaturi180.github.io/birthday-gifts/qr_printable_page.html';
+        document.head.appendChild(link);
+    </script>
+</body>
+</html>
