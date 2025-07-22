@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Happy 21st Birthday! 🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f3ff 0%, #e8f4fd 50%, #fff0f8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            overflow-x: hidden;
+            padding: 1rem;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .birthday-header {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9, #b5e7a0);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            letter-spacing: -0.02em;
+        }
+
+        .gift-envelope {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            height: 220px;
+            margin: 3rem auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .gift-envelope:hover:not(.opened) {
+            transform: scale(1.02);
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: all 1s ease;
+        }
+
+        .envelope-back.revealed {
+            background: linear-gradient(135deg, 
+                rgba(251,182,206,0.2) 0%, 
+                rgba(167,199,231,0.2) 25%, 
+                rgba(200,168,233,0.2) 50%, 
+                rgba(181,231,160,0.2) 75%, 
+                rgba(253,230,138,0.2) 100%);
+            background-size: 300% 300%;
+            animation: gradientFlow 6s ease-in-out infinite;
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.15);
+        }
+
+        .envelope-back::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(251,182,206,0.1) 0%, 
+                rgba(200,168,233,0.1) 30%, 
+                rgba(167,199,231,0.1) 60%, 
+                transparent 100%);
+            opacity: 0;
+            animation: none;
+            transition: opacity 1s ease;
+        }
+
+        .envelope-back.revealed::before {
+            opacity: 1;
+            animation: rotate 20s linear infinite;
+        }
+
+        .envelope-back::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8a8e9' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0;
+            transition: opacity 1s ease 0.5s;
+        }
+
+        .envelope-back.revealed::after {
+            opacity: 1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, rgba(251,182,206,0.3), rgba(200,168,233,0.3));
+            border-radius: 15px 15px 0 0;
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 2;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .envelope-front.opened {
+            transform: rotateX(-180deg);
+        }
+
+        .gift-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 1s ease;
+            z-index: 3;
+            width: 85%;
+            max-width: 300px;
+            height: 80%;
+            max-height: 160px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .gift-content.revealed {
+            opacity: 1;
+            animation: gentleReveal 0.8s ease forwards;
+        }
+
+        .gift-title {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            font-weight: 300;
+            margin-bottom: 0.8rem;
+            color: #374151;
+            letter-spacing: 1px;
+            animation: fadeInUp 0.6s ease 0.3s both;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .gift-description {
+            font-size: clamp(0.8rem, 2vw, 0.95rem);
+            line-height: 1.5;
+            color: #6b7280;
+            font-weight: 400;
+            text-align: center;
+            animation: fadeInUp 0.6s ease 0.6s both;
+            margin: 0;
+        }
+
+        .gift-highlight {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .click-instruction {
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            color: #9ca3af;
+            margin-top: 3rem;
+            animation: gentlePulse 2s ease-in-out infinite;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .click-instruction.revealed {
+            color: #8b5cf6;
+            animation: fadeInUp 0.6s ease forwards;
+            font-style: italic;
+        }
+
+        .name-header {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .love-message {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #9ca3af;
+            margin-top: 3rem;
+            font-style: italic;
+            font-weight: 300;
+            animation: fadeInUp 1s ease forwards 1s;
+        }
+
+        .subtle-sparkle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(45deg, #fbb6ce, #c8a8e9);
+            border-radius: 50%;
+            opacity: 0;
+            animation: subtleSparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.01); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gentleReveal {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes subtleSparkle {
+            0%, 100% { 
+                opacity: 0; 
+                transform: scale(0); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1); 
+            }
+        }
+
+        .animated-orbs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            pointer-events: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .animated-orbs.active {
+            opacity: 1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: floatOrb 8s ease-in-out infinite;
+        }
+
+        .orb:nth-child(1) {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(251,182,206,0.3), rgba(251,182,206,0.1));
+            top: 20%;
+            left: 15%;
+            animation-delay: -2s;
+            animation-duration: 10s;
+        }
+
+        .orb:nth-child(2) {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(167,199,231,0.3), rgba(167,199,231,0.1));
+            top: 60%;
+            right: 20%;
+            animation-delay: -4s;
+            animation-duration: 12s;
+        }
+
+        .orb:nth-child(3) {
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, rgba(200,168,233,0.3), rgba(200,168,233,0.1));
+            bottom: 25%;
+            left: 25%;
+            animation-delay: -6s;
+            animation-duration: 14s;
+        }
+
+        .orb:nth-child(4) {
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, rgba(181,231,160,0.3), rgba(181,231,160,0.1));
+            top: 40%;
+            right: 40%;
+            animation-delay: -1s;
+            animation-duration: 9s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 0.6;
+            }
+            33% { 
+                transform: translate(15px, -20px) scale(1.1); 
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translate(-10px, 15px) scale(0.9); 
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes floatingParticles {
+            0% {
+                opacity: 0;
+                transform: translateY(0px) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .floating-particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: linear-gradient(45deg, #fbb6ce, #c8a8e9);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatingParticles 3s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .gift-envelope {
+                height: 200px;
+                margin: 2rem auto;
+                max-width: 320px;
+            }
+
+            .gift-content {
+                padding: 0.8rem;
+                width: 90%;
+                height: 85%;
+                max-height: 150px;
+            }
+
+            .gift-title {
+                font-size: clamp(1.1rem, 4vw, 1.4rem);
+                margin-bottom: 0.6rem;
+            }
+
+            .gift-description {
+                font-size: clamp(0.75rem, 3vw, 0.9rem);
+                line-height: 1.4;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gift-envelope {
+                height: 180px;
+                max-width: 280px;
+            }
+
+            .gift-content {
+                padding: 0.6rem;
+                width: 95%;
+                height: 90%;
+                max-height: 140px;
+            }
+
+            .gift-title {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .gift-description {
+                font-size: 0.8rem;
+                line-height: 1.3;
+            }
+        }
+
+        /* Ensure smooth transitions on all devices */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="name-header">Rachu</div>
+        <h1 class="birthday-header">Happy 21st Birthday!</h1>
+        
+        <div class="gift-envelope" id="envelope">
+            <div class="envelope-back" id="envelopeBack">
+                <div class="animated-orbs" id="animatedOrbs">
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                    <div class="orb"></div>
+                </div>
+            </div>
+            <div class="envelope-front" id="envelopeFront"></div>
+            <div class="gift-content" id="giftContent">
+                <div class="gift-title">Your Perfect Phone</div>
+                <div class="gift-description">
+                    Choose <span class="gift-highlight">any phone</span> you'd like.<br>
+                    iPhone, Android, or whatever catches your eye.<br><br>
+                    It's time to upgrade to something amazing.
+                </div>
+            </div>
+        </div>
+        
+        <div class="click-instruction" id="instruction">
+            Touch to reveal your gift
+        </div>
+        
+        <div class="love-message">
+            with love from Mom, Babu and Daddy ❤️
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const envelopeFront = document.getElementById('envelopeFront');
+        const giftContent = document.getElementById('giftContent');
+        const instruction = document.getElementById('instruction');
+        let isOpened = false;
+
+        // Handle envelope reveal
+        function revealGift() {
+            if (isOpened) return;
+            
+            const envelopeBack = document.getElementById('envelopeBack');
+            const animatedOrbs = document.getElementById('animatedOrbs');
+            
+            envelopeFront.classList.add('opened');
+            envelope.classList.add('opened');
+            
+            // Trigger background animations
+            if (envelopeBack) {
+                envelopeBack.classList.add('revealed');
+            }
+            if (animatedOrbs) {
+                setTimeout(() => {
+                    animatedOrbs.classList.add('active');
+                }, 800);
+            }
+            
+            setTimeout(() => {
+                giftContent.classList.add('revealed');
+                instruction.textContent = 'Surprise! Time to choose your perfect upgrade.';
+                instruction.classList.add('revealed');
+                
+                // Add subtle celebration effects
+                createSubtleParticles();
+                createGentleSparkles();
+                
+                // Haptic feedback if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }, 400);
+            
+            isOpened = true;
+        }
+
+        // Event listeners
+        envelope.addEventListener('click', revealGift);
+        envelope.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            revealGift();
+        });
+
+        // Create subtle floating particles
+        function createSubtleParticles() {
+            const colors = [
+                'linear-gradient(45deg, #fbb6ce, #f3e8ff)',
+                'linear-gradient(45deg, #a7c7e7, #dbeafe)',
+                'linear-gradient(45deg, #c8a8e9, #f3e8ff)',
+                'linear-gradient(45deg, #b5e7a0, #dcfce7)'
+            ];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'floating-particle';
+                    particle.style.left = Math.random() * 100 + 'vw';
+                    particle.style.top = Math.random() * 100 + 'vh';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.remove();
+                        }
+                    }, 4000);
+                }, i * 150);
+            }
+        }
+
+        // Create gentle sparkles around the envelope
+        function createGentleSparkles() {
+            const envelopeRect = envelope.getBoundingClientRect();
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'subtle-sparkle';
+                    sparkle.style.left = (Math.random() * 100) + '%';
+                    sparkle.style.top = (Math.random() * 100) + '%';
+                    sparkle.style.animationDelay = (Math.random() * 1) + 's';
+                    sparkle.style.animationDuration = (Math.random() * 1 + 1.5) + 's';
+                    
+                    envelope.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        if (sparkle.parentNode) {
+                            sparkle.remove();
+                        }
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+
+        // Keyboard accessibility
+        envelope.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                revealGift();
+            }
+        });
+
+        // Make focusable for keyboard navigation
+        envelope.setAttribute('tabindex', '0');
+        envelope.setAttribute('role', 'button');
+        envelope.setAttribute('aria-label', 'Gift envelope - press to reveal your birthday surprise');
+
+        // Preload fonts for smooth rendering
+        document.fonts.ready.then(() => {
+            console.log('Fonts loaded and ready');
+        });
+    </script>
+</body>
+</html>
