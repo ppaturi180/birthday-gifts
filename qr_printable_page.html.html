@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rachu's 21st Birthday Gifts</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .name {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 300;
+            color: #6b46c1;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .birthday-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #6b7280;
+            font-weight: 400;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .gifts-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .gift-section {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            position: relative;
+            border: 2px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .gift-section:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+
+        .gift-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #6b46c1, #8b5cf6);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+        }
+
+        .gift-title {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        /* QR Code Styles for Desktop */
+        .qr-container {
+            margin: 1rem auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            border: 3px dashed #cbd5e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.4;
+            background: #f9fafb;
+        }
+
+        /* Mobile Button Styles */
+        .mobile-button {
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            margin: 1rem auto;
+            min-width: 250px;
+            min-height: 80px;
+        }
+
+        .mobile-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .mobile-button:active {
+            transform: translateY(-1px);
+        }
+
+        .mobile-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .mobile-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .mobile-button .button-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .mobile-button .icon {
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .scan-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .love-message {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #6b7280;
+            font-style: italic;
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease-out 1s both;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #6b46c1;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(107, 70, 193, 0.4);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tablet and larger screens */
+        @media (min-width: 768px) {
+            .gifts-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .container {
+                padding: 3rem 2rem;
+            }
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 767px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 1rem 0.5rem;
+            }
+
+            .container {
+                padding: 1rem 0.5rem;
+                justify-content: flex-start;
+                padding-top: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                margin: 0;
+                border-radius: 15px;
+            }
+
+            .header {
+                margin-bottom: 2rem;
+            }
+
+            .gift-section {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            /* Hide QR codes on mobile */
+            .qr-container {
+                display: none;
+            }
+
+            /* Show mobile buttons */
+            .mobile-button {
+                display: block;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .instruction {
+                margin-top: 1rem;
+            }
+
+            .scan-text {
+                display: none;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .container {
+                max-width: none;
+                padding: 0.5in;
+                min-height: auto;
+            }
+
+            .card {
+                background: white;
+                box-shadow: none;
+                border: 1px solid #e5e7eb;
+                page-break-inside: avoid;
+            }
+            
+            .mobile-button {
+                display: none;
+            }
+
+            .qr-container {
+                display: inline-block;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            .gifts-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Loading animation for QR codes */
+        .qr-loading {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="name">Hi Rachu</div>
+                <div class="birthday-title">Happy 21st Birthday!</div>
+                <div class="subtitle">Discover your special surprises below</div>
+            </div>
+
+            <div class="gifts-container">
+                <div class="gift-section" id="gift1">
+                    <div class="gift-number">Guess what?</div>
+                    <div class="gift-title">Your First Discovery</div>
+                    
+                    <!-- QR Code for desktop/print -->
+                    <div class="qr-container">
+                        <div class="qr-placeholder qr-loading">
+                            Loading QR Code...
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile button -->
+                    <button class="mobile-button" onclick="openGift('https://ppaturi180.github.io/birthday-gifts/phone_teaser.html')">
+                        <div class="button-content">
+                            <span>Tap to Discover!</span>
+                        </div>
+                    </button>
+                    
+                    <div class="instruction">Scan to begin your journey!</div>
+                    <div class="scan-text">Point your camera at the code</div>
+                </div>
+
+                <div class="gift-section" id="gift2">
+                    <div class="gift-number">Something simple</div>
+                    <div class="gift-title">Hope you like this!</div>
+                    
+                    <!-- QR Code for desktop/print -->
+                    <div class="qr-container">
+                        <div class="qr-placeholder qr-loading">
+                            Loading QR Code...
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile button -->
+                    <button class="mobile-button" onclick="openGift('https://ppaturi180.github.io/birthday-gifts/muji_teaser.html')">
+                        <div class="button-content">
+                            <span class="icon">🎁</span>
+                            <span>Tap to Discover!</span>
+                        </div>
+                    </button>
+                    
+                    <div class="instruction">Scan to begin your journey!</div>
+                    <div class="scan-text">Point your camera at the code</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="love-message">with love from Mom, Babu and Daddy ❤️</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="print-button" onclick="printPage()">🖨️ Print</button>
+
+    <script>
+        // Function to open gift URLs
+        function openGift(url) {
+            // Add a little haptic feedback on mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            // Open the URL
+            window.open(url, '_blank');
+        }
+
+        // Generate QR codes using an online service
+        function generateQRCode(text, containerId) {
+            const qrSize = 200;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(text)}&margin=10&color=374151&bgcolor=f9fafb`;
+            
+            const container = document.querySelector(`#${containerId} .qr-placeholder`);
+            if (container) {
+                // Create image element
+                const img = document.createElement('img');
+                img.src = qrUrl;
+                img.alt = 'QR Code';
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; border-radius: 8px;';
+                
+                // Handle loading
+                img.onload = function() {
+                    container.classList.remove('qr-loading');
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                };
+                
+                // Handle error
+                img.onerror = function() {
+                    container.classList.remove('qr-loading');
+                    container.innerHTML = `
+                        <div style="font-size: 0.8rem; color: #6b7280;">
+                            QR Code for<br>
+                            ${text.includes('phone') ? 'Phone Gift' : 'Muji Gift'}<br><br>
+                            <small>Unable to load QR code</small>
+                        </div>
+                    `;
+                };
+            }
+        }
+
+        // Print function
+        function printPage() {
+            window.print();
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            const phoneUrl = 'https://ppaturi180.github.io/birthday-gifts/phone_teaser.html';
+            const mujiUrl = 'https://ppaturi180.github.io/birthday-gifts/muji_teaser.html';
+            
+            // Only generate QR codes if not on mobile
+            if (window.innerWidth > 767) {
+                generateQRCode(phoneUrl, 'gift1');
+                generateQRCode(mujiUrl, 'gift2');
+            } else {
+                // Hide QR placeholders on mobile
+                document.querySelectorAll('.qr-container').forEach(container => {
+                    container.style.display = 'none';
+                });
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Regenerate QR codes if switching from mobile to desktop
+            if (window.innerWidth > 767) {
+                document.querySelectorAll('.qr-container').forEach(container => {
+                    container.style.display = 'inline-block';
+                });
+                
+                // Only regenerate if QR codes don't exist
+                const qrImages = document.querySelectorAll('.qr-placeholder img');
+                if (qrImages.length === 0) {
+                    const phoneUrl = 'https://ppaturi180.github.io/birthday-gifts/phone_teaser.html';
+                    const mujiUrl = 'https://ppaturi180.github.io/birthday-gifts/muji_teaser.html';
+                    generateQRCode(phoneUrl, 'gift1');
+                    generateQRCode(mujiUrl, 'gift2');
+                }
+            } else {
+                document.querySelectorAll('.qr-container').forEach(container => {
+                    container.style.display = 'none';
+                });
+            }
+        });
+
+        // Add smooth scrolling for better mobile experience
+        if ('scrollBehavior' in document.documentElement.style) {
+            document.documentElement.style.scrollBehavior = 'smooth';
+        }
+
+        // Add touch feedback for mobile buttons
+        document.querySelectorAll('.mobile-button').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
