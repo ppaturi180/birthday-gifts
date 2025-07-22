@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Journey Begins...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f3ff 0%, #e8f4fd 50%, #fff0f8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            overflow-x: hidden;
+            padding: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            max-width: 600px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .journey-step {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            margin-bottom: 2rem;
+        }
+
+        .journey-step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .name-header {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            background: linear-gradient(45deg, #fbb6ce, #a7c7e7, #c8a8e9);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+
+        .personal-message {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 1rem 0;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .quiz-title {
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .question-number {
+            font-size: 0.9rem;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .choice-button {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 1.2rem 1rem;
+            font-size: clamp(1rem, 3.5vw, 1.1rem);
+            font-weight: 500;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .choice-button:active:not(.disabled) {
+            transform: scale(0.98);
+            background: #f8fafc;
+        }
+
+        .choice-button:hover:not(.disabled) {
+            border-color: #c8a8e9;
+            background: #f3e8ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(200, 168, 233, 0.2);
+        }
+
+        .choice-button.correct {
+            border-color: #10b981;
+            background: #d1fae5;
+            color: #059669;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .choice-button.incorrect {
+            border-color: #f87171;
+            background: #fee2e2;
+            color: #dc2626;
+            animation: shake 0.5s ease;
+        }
+
+        .choice-button.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.completed {
+            background: #10b981;
+            transform: scale(1.2);
+        }
+
+        .progress-dot.active {
+            background: #8b5cf6;
+            transform: scale(1.3);
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 50px;
+        }
+
+        .next-button:active {
+            transform: scale(0.98);
+        }
+
+        .next-button.visible {
+            opacity: 1;
+        }
+
+        .next-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .success-message {
+            color: #059669;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            font-weight: 600;
+            margin: 1.5rem 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .success-message.visible {
+            opacity: 1;
+            animation: bounceIn 0.6s ease;
+        }
+
+        .continue-button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 55px;
+        }
+
+        .continue-button:active {
+            transform: scale(0.98);
+        }
+
+        .continue-button.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .continue-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.25rem;
+            }
+
+            .container {
+                padding: 0.5rem;
+                min-height: 100vh;
+            }
+
+            .quiz-container {
+                padding: 1.5rem 1rem;
+                min-height: 400px;
+                margin: 0.5rem 0;
+                border-radius: 15px;
+            }
+
+            .quiz-title {
+                font-size: clamp(1.2rem, 4vw, 1.4rem);
+                margin-bottom: 1.5rem;
+            }
+
+            .question-text {
+                font-size: clamp(1rem, 3.5vw, 1.2rem);
+                margin-bottom: 1.5rem;
+                line-height: 1.5;
+            }
+
+            .choices-container {
+                gap: 0.8rem;
+                margin: 1.5rem 0;
+            }
+
+            .choice-button {
+                padding: 1rem 0.8rem;
+                font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+                min-height: 55px;
+                border-radius: 12px;
+            }
+
+            .progress-indicator {
+                margin-bottom: 1.5rem;
+                gap: 0.8rem;
+            }
+
+            .progress-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .next-button {
+                padding: 12px 25px;
+                font-size: 0.95rem;
+                margin-top: 1rem;
+                min-height: 45px;
+            }
+
+            .continue-button {
+                padding: 15px 30px;
+                font-size: 1rem;
+                margin-top: 1.5rem;
+                min-height: 50px;
+            }
+
+            .personal-message {
+                font-size: clamp(1rem, 3.5vw, 1.3rem);
+                margin-bottom: 1.5rem;
+                line-height: 1.6;
+            }
+
+            .name-header {
+                font-size: clamp(1.8rem, 6vw, 2.5rem);
+                margin-bottom: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.25rem;
+            }
+
+            .quiz-container {
+                padding: 1.2rem 0.8rem;
+                min-height: 380px;
+                border-radius: 12px;
+            }
+
+            .quiz-title {
+                font-size: 1.1rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .choices-container {
+                gap: 0.6rem;
+                margin: 1.2rem 0;
+            }
+
+            .choice-button {
+                padding: 0.9rem 0.6rem;
+                font-size: 0.95rem;
+                min-height: 50px;
+                border-radius: 10px;
+            }
+
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .next-button, .continue-button {
+                font-size: 0.9rem;
+                padding: 12px 20px;
+                min-height: 42px;
+            }
+
+            .personal-message {
+                font-size: 1rem;
+                margin-bottom: 1.2rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .quiz-container {
+                padding: 1rem 0.6rem;
+                min-height: 360px;
+            }
+
+            .choice-button {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.9rem;
+                min-height: 48px;
+            }
+
+            .question-text {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Mobile-specific touch optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .choice-button:hover {
+                transform: none;
+                box-shadow: none;
+                border-color: #e2e8f0;
+                background: white;
+            }
+            
+            .next-button:hover, .continue-button:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="journey-step visible">
+            <div class="name-header">Rachu</div>
+            <div class="personal-message">
+                Today marks a special milestone in your journey...<br>
+                21 years of bringing joy, laughter, and love to our lives.
+            </div>
+        </div>
+
+        <div class="journey-step" id="step2">
+            <div class="personal-message">
+                As you step into this new chapter,<br>
+                we have something special waiting for you.<br><br>
+                But first, a little family trivia to unlock your first gift! 🎁
+            </div>
+        </div>
+
+        <div class="journey-step" id="step3">
+            <div class="quiz-container">
+                <div class="quiz-title">Family Trivia Challenge</div>
+                
+                <div class="progress-indicator" id="progressIndicator">
+                    <div class="progress-dot active" data-question="0"></div>
+                    <div class="progress-dot" data-question="1"></div>
+                    <div class="progress-dot" data-question="2"></div>
+                    <div class="progress-dot" data-question="3"></div>
+                    <div class="progress-dot" data-question="4"></div>
+                    <div class="progress-dot" data-question="5"></div>
+                    <div class="progress-dot" data-question="6"></div>
+                    <div class="progress-dot" data-question="7"></div>
+                </div>
+
+                <!-- Question 1 -->
+                <div class="question-container active" id="question1">
+                    <div class="question-number">Question 1 of 8</div>
+                    <div class="question-text">In which city was Daddy born?</div>
+                    <div class="choices-container" id="choices1">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton1" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-container" id="question2">
+                    <div class="question-number">Question 2 of 8</div>
+                    <div class="question-text">What is Mom's middle name?</div>
+                    <div class="choices-container" id="choices2">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton2" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-container" id="question3">
+                    <div class="question-number">Question 3 of 8</div>
+                    <div class="question-text">What make was our car when we lived in India?</div>
+                    <div class="choices-container" id="choices3">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton3" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-container" id="question4">
+                    <div class="question-number">Question 4 of 8</div>
+                    <div class="question-text">Pick which one of the following is Babu's go-to phrase when he is upset.</div>
+                    <div class="choices-container" id="choices4">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton4" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-container" id="question5">
+                    <div class="question-number">Question 5 of 8</div>
+                    <div class="question-text">How tall is Mommy?</div>
+                    <div class="choices-container" id="choices5">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton5" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-container" id="question6">
+                    <div class="question-number">Question 6 of 8</div>
+                    <div class="question-text">What is Dad's favorite dessert?</div>
+                    <div class="choices-container" id="choices6">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton6" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-container" id="question7">
+                    <div class="question-number">Question 7 of 8</div>
+                    <div class="question-text">What is Babu's favorite food?</div>
+                    <div class="choices-container" id="choices7">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton7" onclick="nextQuestion()">Next Question</button>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="question-container" id="question8">
+                    <div class="question-number">Question 8 of 8</div>
+                    <div class="question-text">What is Mom's favorite brand among these?</div>
+                    <div class="choices-container" id="choices8">
+                        <!-- Choices will be populated by JavaScript -->
+                    </div>
+                    <button class="next-button" id="nextButton8" onclick="finishQuiz()">Finish Quiz</button>
+                </div>
+
+                <!-- Success Screen -->
+                <div class="question-container" id="successScreen">
+                    <div class="success-message" id="successMessage">
+                        🎉 Amazing! You know the family so well!
+                    </div>
+                    <div class="personal-message">
+                        You've unlocked your first gift!<br>
+                        Time to see what's waiting for you...
+                    </div>
+                    <a href="phone.html" class="continue-button" id="continueButton">
+                        Discover Your Gift! ✨
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let questionsAnswered = [false, false, false, false, false, false, false, false];
+        let isProcessing = false;
+
+        // Quiz data with all questions
+        const quizData = [
+            {
+                question: "In which city was Daddy born?",
+                correct: "Guntur",
+                options: ["Guntur", "Hyderabad", "India", "Delhi"]
+            },
+            {
+                question: "What is Mom's middle name?",
+                correct: "Grace",
+                options: ["Grace", "Greece", "Brace", "Cranky Pants"]
+            },
+            {
+                question: "What make was our car when we lived in India?",
+                correct: "Hyundai",
+                options: ["Hyundai", "Toyota", "Nissan", "Ambassador"]
+            },
+            {
+                question: "Pick which one of the following is Babu's go-to phrase when he is upset.",
+                correct: "Eeela",
+                options: ["Eeela", "Boola", "Moolah", "Yella"]
+            },
+            {
+                question: "How tall is Mommy?",
+                correct: "5ft 3in",
+                options: ["5ft 3in", "4ft 11in", "5ft 2in", "5ft 5in"]
+            },
+            {
+                question: "What is Dad's favorite dessert?",
+                correct: "Custard",
+                options: ["Custard", "Gulab Jamun", "Cashew Sweet", "Egg Pudding"]
+            },
+            {
+                question: "What is Babu's favorite food?",
+                correct: "All",
+                options: ["All", "Yellow Rice", "Chicken", "Beef", "Kakarakaya"]
+            },
+            {
+                question: "What is Mom's favorite brand among these?",
+                correct: "Goyard",
+                options: ["Goyard", "Walmart", "5 Below", "Toyota"]
+            }
+        ];
+
+        // Shuffle function to randomize array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Progressive reveal of steps
+        setTimeout(() => {
+            document.getElementById('step2').classList.add('visible');
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById('step3').classList.add('visible');
+        }, 4000);
+
+        // Initialize quiz with shuffled choices
+        function initializeQuiz() {
+            quizData.forEach((questionData, index) => {
+                const choicesContainer = document.getElementById(`choices${index + 1}`);
+                const shuffledOptions = shuffleArray(questionData.options);
+                
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'choice-button';
+                    button.dataset.answer = option === questionData.correct ? 'correct' : 'wrong';
+                    button.dataset.choice = option;
+                    button.textContent = option;
+                    
+                    // Enhanced mobile event handling
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (isProcessing || this.classList.contains('disabled')) return;
+                        handleChoice(this);
+                    });
+                    
+                    button.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (isProcessing || this.classList.contains('disabled')) return;
+                        handleChoice(this);
+                    });
+                    
+                    // Touch feedback
+                    button.addEventListener('touchstart', function(e) {
+                        if (!this.classList.contains('disabled')) {
+                            this.style.transform = 'scale(0.98)';
+                        }
+                    });
+                    
+                    button.addEventListener('touchcancel', function() {
+                        this.style.transform = '';
+                    });
+                    
+                    choicesContainer.appendChild(button);
+                });
+            });
+        }
+
+        function handleChoice(selectedButton) {
+            isProcessing = true;
+            const isCorrect = selectedButton.dataset.answer === 'correct';
+            const currentQuestionContainer = document.querySelector('.question-container.active');
+            const allChoices = currentQuestionContainer.querySelectorAll('.choice-button');
+            
+            // Reset button transform
+            selectedButton.style.transform = '';
+            
+            // Disable all buttons
+            allChoices.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.style.transform = '';
+            });
+            
+            if (isCorrect) {
+                selectedButton.classList.add('correct');
+                questionsAnswered[currentQuestion] = true;
+                
+                // Update progress indicator
+                const progressDots = document.querySelectorAll('.progress-dot');
+                progressDots[currentQuestion].classList.remove('active');
+                progressDots[currentQuestion].classList.add('completed');
+                
+                // Show next button after a delay
+                setTimeout(() => {
+                    const nextButton = currentQuestionContainer.querySelector('.next-button');
+                    nextButton.classList.add('visible');
+                    isProcessing = false;
+                }, 800);
+                
+                // Enhanced haptic feedback for mobile
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 50, 100]);
+                }
+                
+            } else {
+                selectedButton.classList.add('incorrect');
+                
+                // Shorter vibration for wrong answer
+                if (navigator.vibrate) {
+                    navigator.vibrate(100);
+                }
+                
+                // Just show incorrect animation, don't reveal correct answer
+                setTimeout(() => {
+                    allChoices.forEach(btn => {
+                        btn.classList.remove('disabled');
+                    });
+                    
+                    selectedButton.classList.remove('incorrect');
+                    isProcessing = false;
+                }, 1000);
+            }
+        }
+
+        function nextQuestion() {
+            if (!questionsAnswered[currentQuestion]) return;
+            
+            // Hide current question
+            const currentQuestionElement = document.getElementById(`question${currentQuestion + 1}`);
+            currentQuestionElement.classList.remove('active');
+            
+            // Show next question
+            currentQuestion++;
+            const nextQuestionElement = document.getElementById(`question${currentQuestion + 1}`);
+            nextQuestionElement.classList.add('active');
+            
+            // Update progress indicator
+            const progressDots = document.querySelectorAll('.progress-dot');
+            if (currentQuestion < 8) {
+                progressDots[currentQuestion].classList.add('active');
+            }
+        }
+
+        function finishQuiz() {
+            if (!questionsAnswered[currentQuestion]) return;
+            
+            // Hide current question
+            const currentQuestionElement = document.getElementById(`question${currentQuestion + 1}`);
+            currentQuestionElement.classList.remove('active');
+            
+            // Show success screen
+            const successScreen = document.getElementById('successScreen');
+            successScreen.classList.add('active');
+            
+            // Animate success message
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('visible');
+            }, 300);
+            
+            setTimeout(() => {
+                document.getElementById('continueButton').classList.add('visible');
+                createCelebration();
+            }, 800);
+        }
+
+        function createCelebration() {
+            const colors = ['#fbb6ce', '#a7c7e7', '#c8a8e9', '#b5e7a0'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: fixed;
+                        width: 8px;
+                        height: 8px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        border-radius: 50%;
+                        pointer-events: none;
+                        left: ${Math.random() * 100}vw;
+                        top: -10px;
+                        z-index: 1000;
+                        animation: fall ${2 + Math.random() * 3}s linear forwards;
+                    `;
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.remove();
+                        }
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        // Add CSS for falling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(110vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuiz();
+            initializeMobileOptimizations();
+        });
+
+        // Mobile-specific optimizations
+        function initializeMobileOptimizations() {
+            // Prevent zoom on double tap
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, { passive: false });
+
+            // Prevent scroll bounce on iOS
+            document.addEventListener('touchmove', function(event) {
+                if (event.scale !== 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+
+            // Add touch feedback to buttons
+            document.querySelectorAll('.next-button, .continue-button').forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                button.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+                
+                button.addEventListener('touchcancel', function() {
+                    this.style.transform = '';
+                });
+            });
+
+            // Improve scroll behavior
+            if ('scrollBehavior' in document.documentElement.style) {
+                document.documentElement.style.scrollBehavior = 'smooth';
+            }
+
+            // Handle orientation change
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                }, 100);
+            });
+        }
+    </script>
+</body>
+</html>
